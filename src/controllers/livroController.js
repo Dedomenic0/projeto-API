@@ -1,18 +1,19 @@
 import livro from "../models/Livro.js";
 import { autor } from "../models/Autor.js";
-import mongoose from "mongoose";
+//import mongoose from "mongoose";
+
 class LivroController {
 
-  static async listarLivros (req, res) {
+  static async listarLivros (req, res, next) {
     try {
       const listaLivros = await livro.find({}); //find se conecta ao banco e busca oq foi especificado 
       res.status(200).json(listaLivros);
     } catch (erro) {
-      res.status(500).json({message: `${erro.message} - falha na requisição`});
+      next(erro);
     }
   }
 
-  static async cadastrarLivro (req, res) {
+  static async cadastrarLivro (req, res, next) {
     const novoLivro = req.body;
 
     try { 
@@ -21,45 +22,45 @@ class LivroController {
       const livroCriado = await livro.create(livroCompleto);
       res.status(201).json({ message: "Criado com sucesso", livro: livroCriado });
     } catch (erro) {
-      res.status(500).json({ message: `${erro.message} - falha ao cadastrar um livro` });
+      next(erro);
     }
   }
-  static async listarLivroPorId (req, res) {
+  static async listarLivroPorId (req, res, next) {
     try {
       const id = req.params.id;
       const livroEncontrado = await livro.findById(id);  
       
       livroEncontrado == null ? res.status(404).json({ message: "Livro não encontrado"}) : res.status(200).json(livroEncontrado);
     } catch (erro) {
-      erro instanceof mongoose.Error.CastError ? res.status(400).json({ message: "Dado de pesquisa incorreto"}) : res.status(500).json({ message: `${erro.message} - falha na requisição do livro `});
+      next(erro);
     }
   }
-  static async atualizarLivro (req, res) {
+  static async atualizarLivro (req, res, next) {
     try {
       const id = req.params.id;
       await livro.findByIdAndUpdate(id, req.body);  
       res.status(200).json({ message: "Livro atualizado" });
     } catch (erro) {
-      res.status(500).json({ message: `${erro.message} - falha na atualização do livro` });
+      next(erro);
     }
   }
-  static async excluirLivro (req, res) {
+  static async excluirLivro (req, res, next) {
     try {
       const id = req.params.id;
       await livro.findByIdAndDelete (id);
       res.status(200).json ({ mensage: "Livro deletado" });
     } catch (erro) {
-      res.status(500).json({ message: `${erro.message} - falha ao deletar livro` });
+      next(erro);
     }
   }
 
-  static async listarLivrosPorEditora (req, res) {
+  static async listarLivrosPorEditora (req, res, next) {
     const editora = req.query.editora; 
     try {
       const livrosPorEditora = await livro.find({ editora: editora });
       res.status(200).json(livrosPorEditora);
     } catch (erro){
-      res.status(500).json({ message: `${erro.mensage} - falha na requisição` });
+      next(erro);
     }
   }
 };
