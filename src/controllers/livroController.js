@@ -1,5 +1,5 @@
-import livro from "../models/Livro.js";
-import { autor } from "../models/Autor.js";
+import { livro, autor } from "../models/index.js";
+import NaoEncontrado from "../erros/naoEncontrado.js";
 //import mongoose from "mongoose";
 
 class LivroController {
@@ -30,7 +30,7 @@ class LivroController {
       const id = req.params.id;
       const livroEncontrado = await livro.findById(id);  
       
-      livroEncontrado == null ? res.status(404).json({ message: "Livro não encontrado"}) : res.status(200).json(livroEncontrado);
+      livroEncontrado == null ? next(new NaoEncontrado("Livro não encontrado")) : res.status(200).json(livroEncontrado);
     } catch (erro) {
       next(erro);
     }
@@ -39,7 +39,7 @@ class LivroController {
     try {
       const id = req.params.id;
       await livro.findByIdAndUpdate(id, req.body);  
-      res.status(200).json({ message: "Livro atualizado" });
+      id == null ? next(new NaoEncontrado("Livro não encontrado")) : res.status(200).json("Livro atualizado");
     } catch (erro) {
       next(erro);
     }
@@ -48,7 +48,7 @@ class LivroController {
     try {
       const id = req.params.id;
       await livro.findByIdAndDelete (id);
-      res.status(200).json ({ mensage: "Livro deletado" });
+      id == null ? next(new NaoEncontrado("Livro não encontrado")) : res.status(200).json("Livro deletado");
     } catch (erro) {
       next(erro);
     }

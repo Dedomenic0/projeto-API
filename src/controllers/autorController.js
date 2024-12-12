@@ -1,6 +1,6 @@
 //import mongoose from "mongoose";
 import NaoEncontrado from "../erros/naoEncontrado.js";
-import { autor } from "../models/Autor.js";
+import { autor } from "../models/index.js";
 
 class AutorController {
 
