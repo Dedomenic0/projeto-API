@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 import mongoose from "mongoose";
 import ErroBase from "../erros/erroBase.js";
 import RequisicaoIncorreta from "../erros/requisicaoIncorreta.js";

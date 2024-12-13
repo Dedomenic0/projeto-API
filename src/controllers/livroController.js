@@ -1,4 +1,4 @@
-import { livro, autor } from "../models/index.js";
+import { livro, autor, } from "../models/index.js";
 import NaoEncontrado from "../erros/naoEncontrado.js";
 //import mongoose from "mongoose";
 
@@ -54,13 +54,21 @@ class LivroController {
     }
   }
 
-  static async listarLivrosPorEditora (req, res, next) {
-    const editora = req.query.editora; 
+  static async listarLivrosPorFiltro (req, res, next) {
+    
     try {
-      const livrosPorEditora = await livro.find({ editora: editora });
+      const {editora, titulo, nomeAutor} = req.query;
+      let busca = {};
+      
+      if (editora) busca.editora = { $regex: editora, $options: "i" };
+      if (titulo) busca.titulo = { $regex: titulo, $options: "i" };
+      if (nomeAutor) busca = { ...busca, "autor.nome": nomeAutor};
+      
+      const livrosPorEditora = await livro.find(busca);
       res.status(200).json(livrosPorEditora);
     } catch (erro){
       next(erro);
+      console.error(erro);
     }
   }
 };
