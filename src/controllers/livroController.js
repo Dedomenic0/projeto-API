@@ -1,4 +1,4 @@
-import { livro, autor, } from "../models/index.js";
+import { livro, autor } from "../models/index.js";
 import NaoEncontrado from "../erros/naoEncontrado.js";
 //import mongoose from "mongoose";
 
@@ -6,7 +6,10 @@ class LivroController {
 
   static async listarLivros (req, res, next) {
     try {
-      const listaLivros = await livro.find({}); //find se conecta ao banco e busca oq foi especificado 
+      const { limite = 5, pagina = 1 } = req.query;
+
+      const listaLivros = await livro.find({})   //find se conecta ao banco e busca oq foi especificado 
+        .skip((pagina - 1) * limite).limit(limite);
       res.status(200).json(listaLivros);
     } catch (erro) {
       next(erro);

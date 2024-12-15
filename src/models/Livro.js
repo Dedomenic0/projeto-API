@@ -6,7 +6,7 @@ const livroSchema = new mongoose.Schema({
   titulo: { type: String, required: [true, "Titulo não fornecido"] },
   editora: { type: String, required: [true, "editora não informada"], 
     enum:{
-      values: ["Classicos", "Compact"],
+      values: ["Classicos", "Compact", "Livretos"],
       message: "Editora {VALUE} nao cadastrada"} },
   preco: { type: Number },
   paginas: { type: Number, 
