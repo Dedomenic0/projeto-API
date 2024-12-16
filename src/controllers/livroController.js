@@ -1,16 +1,13 @@
 import { livro, autor } from "../models/index.js";
 import NaoEncontrado from "../erros/naoEncontrado.js";
-//import mongoose from "mongoose";
 
 class LivroController {
 
   static async listarLivros (req, res, next) {
     try {
-      const { limite = 5, pagina = 1 } = req.query;
-
-      const listaLivros = await livro.find({})   //find se conecta ao banco e busca oq foi especificado 
-        .skip((pagina - 1) * limite).limit(limite);
-      res.status(200).json(listaLivros);
+      const buscaLivros = livro.find();
+      req.resultado = buscaLivros;
+      next();
     } catch (erro) {
       next(erro);
     }
@@ -20,12 +17,14 @@ class LivroController {
     const novoLivro = req.body;
 
     try { 
-      const autorEncontrado = await autor.findById(novoLivro.autor);
-      const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado._doc }};
-      const livroCriado = await livro.create(livroCompleto);
+      let autorEncontrado = await autor.findById(novoLivro.autor);
+      let livroCompleto = { ...novoLivro, autor: { ...autorEncontrado._doc }};
+      let livroCriado = await livro.create(livroCompleto);
       res.status(201).json({ message: "Criado com sucesso", livro: livroCriado });
+      
     } catch (erro) {
       next(erro);
+      
     }
   }
   static async listarLivroPorId (req, res, next) {
@@ -42,7 +41,11 @@ class LivroController {
     try {
       const id = req.params.id;
       await livro.findByIdAndUpdate(id, req.body);  
+      
+      console.log(livro.findByIdAndUpdate(id, req.body));
+
       id == null ? next(new NaoEncontrado("Livro não encontrado")) : res.status(200).json("Livro atualizado");
+
     } catch (erro) {
       next(erro);
     }
@@ -57,6 +60,7 @@ class LivroController {
     }
   }
 
+
   static async listarLivrosPorFiltro (req, res, next) {
     
     try {
@@ -67,8 +71,9 @@ class LivroController {
       if (titulo) busca.titulo = { $regex: titulo, $options: "i" };
       if (nomeAutor) busca = { ...busca, "autor.nome": nomeAutor};
       
-      const livrosPorEditora = await livro.find(busca);
-      res.status(200).json(livrosPorEditora);
+      const livrosPorEditora = livro.find(busca);
+      req.resultado = livrosPorEditora;
+      next();
     } catch (erro){
       next(erro);
       console.error(erro);

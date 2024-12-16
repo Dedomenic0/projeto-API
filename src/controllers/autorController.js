@@ -4,10 +4,12 @@ import { autor } from "../models/index.js";
 
 class AutorController {
 
-  static async listarAutores (req, res) {
+  static async listarAutores (req, res, next) {
     try {
-      const listaAutores = await autor.find({}); //find se conecta ao banco e busca oq foi especificado 
-      res.status(200).json(listaAutores);
+      const listaAutores =  autor.find({}); //find se conecta ao banco e busca oq foi especificado 
+      req.resultado = listaAutores;
+      
+      next();
     } catch (erro) {
       res.status(500).json({message: `${erro.message} - falha na requisição`});
     }
